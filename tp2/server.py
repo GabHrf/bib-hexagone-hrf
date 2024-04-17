@@ -1,4 +1,7 @@
+import socketserver
 import json
+import sys
+
 class Book:
     def __init__(self,nom, tag, image):
         self.__nom = nom
@@ -75,3 +78,22 @@ if __name__ == '__main__':
     lib.delete_books('Test')
     lib.display_books()
     
+
+class Server(socketserver.BaseRequestHandler):
+
+    def handle(self):
+        # self.request is the TCP socket connected to the client
+        self.data = self.request.recv(1024).strip()
+        print("Received from {}:".format(self.client_address[0]))
+        print(self.data)
+        # just send back the same data, but upper-cased
+        self.request.sendall(self.data.upper())
+
+if __name__ == "__main__":
+    HOST, PORT = "localhost", 9999
+
+    with socketserver.TCPServer((HOST, PORT), Server) as server:
+        server.serve_forever()
+
+if __name__ == "__main__":
+    main()
